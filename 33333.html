@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TADOW — For Your Bestie</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --card:#0f1724;
+    --accent:#ff6b9a;
+    --text:#ffffff;
+  }
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{
+    background: radial-gradient(1200px 600px at 10% 10%, #14213d 0%, transparent 10%),
+                radial-gradient(1000px 500px at 90% 90%, #1b2a4a 0%, transparent 12%),
+                var(--bg);
+    color:var(--text);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  .card{width:100%;max-width:920px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.05));border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6),inset 0 1px 0 rgba(255,255,255,0.02);position:relative;overflow:hidden;}
+  header{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+  .logo{width:58px;height:58px;border-radius:10px;background:linear-gradient(135deg,#ff7aa2,#6b8bff);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px;box-shadow:0 6px 20px rgba(107,139,255,0.15);}
+  h1{font-size:20px;margin:0;}
+  p.lead{margin:6px 0 18px;color:rgba(255,255,255,0.78)}
+  .actions{display:flex;gap:12px;align-items:center;}
+  button#tadow{background:linear-gradient(90deg,#ff4d8a,#ff9a66);border:none;padding:12px 20px;border-radius:999px;font-weight:700;color:white;font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(255,77,138,0.18),0 2px 6px rgba(0,0,0,0.4);transition:transform .12s ease;}
+  button#tadow:active{transform:scale(.98);}
+  .small{color:rgba(255,255,255,0.8);font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;}
+  #fxCanvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;}
+  .balloons{position:absolute;left:0;right:0;bottom:0;top:0;pointer-events:none;overflow:hidden;}
+  .balloon{position:absolute;bottom:-120px;filter:drop-shadow(0 8px 18px rgba(10,10,20,0.6));transform-origin:center bottom;animation:floatUp linear forwards;will-change:transform,opacity;}
+  .heart{width:72px;height:72px;display:block;}
+  @keyframes floatUp{0%{transform:translateY(0) rotate(-6deg);opacity:0;}10%{opacity:1;}50%{transform:translateY(-55vh) rotate(6deg);}100%{transform:translateY(-110vh) rotate(-12deg);opacity:0;}}
+  .message{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.85);font-size:38px;font-weight:800;letter-spacing:1px;text-align:center;color:var(--text);opacity:0;pointer-events:none;text-shadow:0 6px 30px rgba(255,90,140,0.08),0 2px 6px rgba(0,0,0,0.6);}
+  .message.show{animation:popIn 900ms cubic-bezier(.2,.9,.3,1) forwards;}
+  @keyframes popIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.6);filter:blur(6px);}60%{opacity:1;transform:translate(-50%,-50%) scale(1.06);filter:blur(0);}100%{transform:translate(-50%,-50%) scale(1);}}
+  .subtitle{display:block;font-size:14px;opacity:0.85;margin-top:6px;font-weight:600;color:rgba(255,255,255,0.85)}
+  footer{margin-top:18px;font-size:13px;color:rgba(255,255,255,0.55)}
+  @media (max-width:480px){.message{font-size:28px}.heart{width:60px;height:60px}}
+</style>
+</head>
+<body>
+  <div class="card">
+    <canvas id="fxCanvas"></canvas>
+    <div class="balloons" id="balloons"></div>
+    <header><div class="logo">TAD</div><div><h1>TADOW — Surprise for your best friend</h1><p class="lead">Click the button and let the celebration begin ✨</p></div></header>
+    <div class="actions"><button id="tadow">TADOW 🎉</button><span class="small">One click = boom of love</span></div>
+    <div class="message" id="message">Best Friend Forever 💖<span class="subtitle">You're stuck with me — in the best way.</span></div>
+    <footer>Made with friendship and a little bit of code.</footer>
+  </div>
+  <!-- Pop sound -->
+  <audio id="popSound" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
+  </audio>
+<script>
+function launchFireworks(){
+  const canvas=document.getElementById("fxCanvas"),ctx=canvas.getContext("2d");
+  canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
+  const particles=[];function createParticle(x,y,color){return{x,y,color,radius:Math.random()*2+1,alpha:1,angle:Math.random()*2*Math.PI,speed:Math.random()*5+2};}
+  for(let i=0;i<50;i++){particles.push(createParticle(canvas.width/2,canvas.height/2,`hsl(${Math.random()*360},100%,70%)`));}
+  function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach((p,i)=>{p.x+=Math.cos(p.angle)*p.speed;p.y+=Math.sin(p.angle)*p.speed;p.alpha-=0.02;if(p.alpha<=0)particles.splice(i,1);ctx.globalAlpha=p.alpha;ctx.beginPath();ctx.arc(p.x,p.y,p.radius,0,2*Math.PI);ctx.fillStyle=p.color;ctx.fill();});if(particles.length>0)requestAnimationFrame(animate);else ctx.clearRect(0,0,canvas.width,canvas.height);}animate();}
+function releaseBalloons(){
+  const container=document.getElementById("balloons");
+  for(let i=0;i<5;i++){const b=document.createElement("div");b.className="balloon";b.style.left=Math.random()*90+"%";b.style.animationDuration=(5+Math.random()*3)+"s";b.innerHTML='<svg class="heart" viewBox="0 0 32 29.6"><path fill="#ff6b9a" d="M23.6,0c-2.9,0-5.4,1.6-6.6,4C15.8,1.6,13.3,0,10.4,0C4.7,0,0,4.7,0,10.4c0,11.4,16,19.2,16,19.2 s16-7.8,16-19.2C32,4.7,27.3,0,21.6,0z"/></svg>';container.appendChild(b);setTimeout(()=>container.removeChild(b),8000);}}
+function showMessage(){document.getElementById("message").classList.add("show");setTimeout(()=>document.getElementById("message").classList.remove("show"),4000);}
+// Button click
+document.getElementById("tadow").addEventListener("click",()=>{
+  launchFireworks();
+  releaseBalloons();
+  showMessage();
+  document.getElementById("popSound").currentTime=0;
+  document.getElementById("popSound").play();
+});
+</script>
+</body>
+</html>
